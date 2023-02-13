@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-import sys
-import os
-import time
+import argparse, sys, os, time
 
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol, ssl
 
+args = argparse.ArgumentParser(description='moin')
+args.add_argument('--path', required=True)
+args = args.parse_args()
 
 class Bot(object):
 
@@ -20,7 +21,7 @@ BOTS = [
     Bot("moin", "#hsmr-moin", "irc.hackint.org", 6697)
 ]
 
-SCOREBOARD_PATH = "scoreboard.csv"
+SCOREBOARD_PATH = args.path + "/scoreboard.csv"
 
 MOIN_VERSIONS = [
     "moin",
