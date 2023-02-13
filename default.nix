@@ -1,4 +1,3 @@
-
 { config, lib, pkgs, ... }:
 
 with lib;
@@ -11,18 +10,13 @@ let
       src = lib.cleanSource ./.; 
 
       propagatedBuildInputs = with pkgs.python3Packages; [
-        # for parser.py
-        bottle
-        pandas
-
-        # for logger.py
         twisted
         pyopenssl
         service-identity
       ];
 
       meta = {
-        homepage = https://github.com/hackspace.marburg/moin;
+        homepage = https://github.com/hackspace-marburg/moin;
         description = "moin";
         license = lib.licenses.gpl3;
       };
@@ -30,36 +24,29 @@ let
       installPhase = ''
         mkdir -p $out/bin
         cp $src/logger.py $out/bin
-        cp $src/parser.py $out/bin
+        chmod +x $out/bin/logger.py
       '';
 
     };
 
-    moin-uid = 9161;
-
-    moinConfig = pkgs.writeText "config.toml" ''
-        port = '${toString cfg.port}'
-        path = '${cfg.path}'
-    '';
+    moin-uid = 8014;
 
     cfg = config.services.moin;
+
+    parser = pkgs.writeShellScript "parser.sh" ''
+      export TOTAL=$(${pkgs.coreutils}/bin/wc -l < ${cfg.storePath}/scoreboard.csv)
+      echo $TOTAL > /var/www/moin/index.html
+    '';
 
 in {
   options.services.moin = {
     enable = mkEnableOption "moin";
 
-    port = mkOption {
-      default = 80;
-      type = types.port;
-      description = "Server port for bottlepy";
-    };
-
-    path = mkOption {
+    storePath = mkOption {
       default = "/var/lib/moin";
       type = types.path;
       description = "Directory for moin's store";
     };
-
   };
 
   config = mkIf cfg.enable {
@@ -74,7 +61,7 @@ in {
       serviceConfig = {
         ExecStart = ''
           ${moin}/bin/logger.py \
-            --path ${cfg.path}
+            --path ${cfg.storePath}
         '';
 
         Type = "simple";
@@ -88,31 +75,41 @@ in {
       description = "moin-parser";
 
       after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
+      wantedBy = [ "default.target" ];
 
       serviceConfig = {
         ExecStart = ''
-          ${moin}/bin/parser.py \
-            --path ${cfg.path} \ 
-            --port ${cfg.port}
+          ${parser}
         '';
 
         Type = "simple";
 
         User = "moin";
-        Group = "moin";
+        Group = "users";
       };
     };
 
+    systemd.timers.moin-parser = {
+      description = "moin-parser timer";
+
+      timerConfig = {
+        OnCalendar = "*-*-* *:*:23";
+        Persistent = "true";
+      };
+
+      wantedBy = [ "timers.target" ];
+    };
 
     users.users.moin = {
       group = "moin";
-      home = cfg.serverPath;
+      home = cfg.storePath;
       createHome = true;
       uid = moin-uid;
     };
 
     users.groups.moin.gid = moin-uid;
+
+    users.users.nginx.extraGroups = [ "moin" ];
 
   };
 
