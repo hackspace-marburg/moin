@@ -34,8 +34,11 @@ let
     cfg = config.services.moin;
 
     parser = pkgs.writeShellScript "parser.sh" ''
-      export TOTAL=$(${pkgs.coreutils}/bin/wc -l < ${cfg.storePath}/scoreboard.csv)
-      echo $TOTAL > /var/www/moin/index.html
+      while ${pkgs.inotifyTools}/bin/inotifywait ${cfg.storePath}/scoreboard.csv; do
+        export TOTAL=$(${pkgs.coreutils}/bin/wc -l < ${cfg.storePath}/scoreboard.csv)
+        echo $TOTAL > /var/www/moin/index.html
+        cat ${cfg.storePath}/scoreboard.csv | ${pkgs.python3}/bin/python3 -c 'import csv, json, sys; print(json.dumps([dict(r) for r in csv.DictReader(sys.stdin)]))' > /var/www/moin/full.json
+      done
     '';
 
 in {
@@ -78,6 +81,7 @@ in {
       wantedBy = [ "default.target" ];
 
       serviceConfig = {
+        Restart = "always";
         ExecStart = ''
           ${parser}
         '';
@@ -87,17 +91,6 @@ in {
         User = "moin";
         Group = "users";
       };
-    };
-
-    systemd.timers.moin-parser = {
-      description = "moin-parser timer";
-
-      timerConfig = {
-        OnCalendar = "*-*-* *:*:23";
-        Persistent = "true";
-      };
-
-      wantedBy = [ "timers.target" ];
     };
 
     users.users.moin = {
