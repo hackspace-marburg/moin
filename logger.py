@@ -28,7 +28,7 @@ VARIATIONS = [
     "oi",
     "noim",
     "niom",
-    "MOIN",
+    "mion",
 ]
 
 class IRCLogger(object):
@@ -52,7 +52,7 @@ class IRCLogger(object):
         self.file.close()
 
     def message(self, user, message, channel): 
-        if message in VARIATIONS:
+        if message.lower() in VARIATIONS.lower():
             self.log("<%s>,%s,%s" % (user, message, channel))
 
 class IRCBot(irc.IRCClient):
