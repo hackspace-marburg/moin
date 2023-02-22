@@ -52,7 +52,7 @@ class IRCLogger(object):
         self.file.close()
 
     def message(self, user, message, channel): 
-        if message.lower() in VARIATIONS.lower():
+        if message.lower() in VARIATIONS:
             self.log("<%s>,%s,%s" % (user, message, channel))
 
 class IRCBot(irc.IRCClient):
