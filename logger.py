@@ -21,9 +21,9 @@ BOTS = [
     Bot("moin", "#hsmr-moin", "irc.hackint.org", 6697)
 ]
 
-SCOREBOARD_PATH = args.path + "/scoreboard.csv"
+LOGPATH = args.path + "/scoreboard.csv"
 
-MOIN_VERSIONS = [
+VARIATIONS = [
     "moin",
     "oi",
     "noim",
@@ -36,12 +36,12 @@ class IRCLogger(object):
     def __init__(self, server, channel):
         self._channel = channel
         self._server = server
-        self.file = open(SCOREBOARD_PATH, "a",
+        self.file = open(LOGPATH, "a",
                          encoding="utf-8", errors="replace")
 
     def log(self, message):
         self.file.close()
-        self.file = open(SCOREBOARD_PATH, "a",
+        self.file = open(LOGPATH, "a",
                          encoding="utf-8", errors="replace")
         self.file.write('%s,%s\n' % (
             time.time(), message)
@@ -52,7 +52,7 @@ class IRCLogger(object):
         self.file.close()
 
     def message(self, user, message, channel): 
-        if message in MOIN_VERSIONS:
+        if message in VARIATIONS:
             self.log("<%s>,%s,%s" % (user, message, channel))
 
 class IRCBot(irc.IRCClient):
