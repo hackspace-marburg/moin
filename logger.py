@@ -53,7 +53,7 @@ class IRCLogger(object):
 
     def message(self, user, message, channel): 
         if message.lower() in VARIATIONS:
-            self.log("<%s>,%s,%s" % (user, message, channel))
+            self.log("%s,%s,%s" % (user.split("!", 1)[0], message, channel))
 
 class IRCBot(irc.IRCClient):
 
