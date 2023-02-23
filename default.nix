@@ -37,7 +37,7 @@ let
       while ${pkgs.inotifyTools}/bin/inotifywait ${cfg.storePath}/scoreboard.csv; do
         export TOTAL=$(${pkgs.coreutils}/bin/wc -l < ${cfg.storePath}/scoreboard.csv)
         echo $TOTAL > /var/www/moin/index.html
-        cat ${cfg.storePath}/scoreboard.csv | ${pkgs.python3}/bin/python3 -c 'import csv, json, sys; print(json.dumps([dict(r) for r in csv.DictReader(sys.stdin)]))' > /var/www/moin/full.json
+        cat ${cfg.storePath}/scoreboard.csv | ${pkgs.python3}/bin/python3 -c 'import csv, json, sys; print(json.dumps([dict(r) for r in csv.DictReader(sys.stdin)]))' > /var/www/moin/json/data.json
       done
     '';
 
