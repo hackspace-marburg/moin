@@ -107,6 +107,18 @@ client.addListener('message', async (from, to, message) => {
       const count = await getChannelCatchphraseCount(to);
       client.notice(to, `Bisher gab es ${count} verschiedene moins.`);
     }
+
+    if (lowercaseMessage.startsWith('!zahl')) {
+      const parts = message.split(' ');
+      const nickToCount = parts[1] || from;
+
+      const userCount = await getUserCatchphraseCount(to, nickToCount);
+      if (userCount > 0) {
+        client.notice(to, `${nickToCount} hat ${userCount} Mal moin gesagt.`);
+      } else {
+        client.notice(to, `Der Nick ist nicht bekannt.`);
+      }
+    }
   }
 });
 
@@ -179,6 +191,23 @@ async function getChannelCatchphraseCount(channel: string): Promise<number> {
         reject(err);
         return;
       }
+      resolve(row && typeof row.count === 'number' ? row.count : 0);
+    });
+  });
+}
+
+// Function to get the count of catchphrase events for a user (defaults to the sender)
+async function getUserCatchphraseCount(channel: string, user?: string): Promise<number> {
+  return new Promise<number>((resolve, reject) => {
+    const query = 'SELECT COUNT(*) as count FROM events WHERE channel = ? AND user COLLATE NOCASE = ?';
+    const params = user ? [channel, user] : [channel, user || ''];
+    db.get(query, params, (err, row: { count?: number }) => {
+      if (err) {
+        console.error('Error getting catchphrase count:', err.message);
+        reject(err);
+        return;
+      }
+      // TypeScript now knows the structure of the result
       resolve(row && typeof row.count === 'number' ? row.count : 0);
     });
   });

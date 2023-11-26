@@ -15,3 +15,4 @@ of the usage.
 - Opt-in to tracking via `!ja`
 - Opt-out of tracking via `!nein`
 - Printing usage information per channel with `!moin`
+- Printing usage information for each user with `!zahl NICK` (defaults to sender)
