@@ -13,5 +13,5 @@ irc:
   server: 'irc.example.org'
   port: 6697
   tls: true
-  username: 'oi'
+  username: 'moin'
   passphrase: 'forNickServ'
