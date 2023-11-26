@@ -1,6 +1,6 @@
 version: '3'
 services:
-  oi:
+  moin:
     image: alpine
     network_mode: host
     build:

@@ -49,7 +49,7 @@ const ircConfig: irc.Config = {
   autoConnect: true,
 };
 
-const catchphrases = config.oi.variations;
+const catchphrases = config.moin.variations;
 
 const irc = require('irc');
 
@@ -85,7 +85,7 @@ client.addListener('message', async (from, to, message) => {
     const catchphraseUsed = catchphrases.includes(lowercaseMessage);
 
     // Check if the user has opted in and a catchphrase is used
-    if (catchphraseUsed && (await hasUserOptedIn(from, to))) {
+    if (catchphraseUsed && (await hasUserOptedIn(from, to) || config.moin.allowedUsers.includes(from))) {
       // Log the catchphrase event to the database
       logEvent(from, to, lowercaseMessage);
     }

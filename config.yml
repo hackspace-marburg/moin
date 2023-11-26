@@ -1,10 +1,17 @@
-oi:
+moin:
   variations:
     - 'moin'
     - 'oi'
     - 'niom'
     - 'noim'
     - 'mion'
+  allowedUsers:
+    - 'moinbot'
+    - 'oibot'
+    - 'noimbot'
+    - 'MOINbot'
+    - 'OIbot'
+    - 'moibot'
 
 irc:
   channels:
