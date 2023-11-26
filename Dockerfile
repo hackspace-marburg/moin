@@ -12,7 +12,7 @@ COPY package*.json config.yml bot.ts ./
 RUN npm install -g typescript && npm install @types/node && npm install
 
 # Compile TypeScript to JavaScript
-RUN npm install irc sqlite3 js-yaml
+RUN npm install irc express sqlite3 js-yaml
 RUN tsc bot.ts
 
 # Run the bot when the container starts

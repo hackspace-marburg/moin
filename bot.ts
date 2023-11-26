@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-
+import express from 'express';
 import irc from 'irc';
 import * as sqlite3 from 'sqlite3';
 
@@ -50,6 +50,9 @@ const ircConfig: irc.Config = {
 };
 
 const catchphrases = config.moin.variations;
+
+const express = require('express');
+const apiApp = express();
 
 const irc = require('irc');
 
@@ -222,4 +225,24 @@ client.addListener('error', (message) => {
 client.addListener('disconnect', () => {
   console.log('Disconnected. Reconnecting...');
   client.connect();
+});
+
+// Endpoint to get catchphrase events
+apiApp.get('/api', (req, res) => {
+  const query = 'SELECT * FROM events';
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Error getting catchphrase events:', err.message);
+      res.status(500).json({ error: 'Internal Server Error' });
+      return;
+    }
+
+    res.json(rows);
+  });
+});
+
+// Start the server
+apiApp.listen(config.api.port, () => {
+  console.log(`Server is running on http://localhost:${config.api.port}`);
 });

@@ -22,3 +22,6 @@ irc:
   tls: true
   username: 'moin'
   passphrase: 'forNickServ'
+
+api:
+  port: 3161
