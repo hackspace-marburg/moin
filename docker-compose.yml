@@ -1,0 +1,10 @@
+version: '3'
+services:
+  oi:
+    image: alpine
+    network_mode: host
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /var/lib/oi:/usr/src/app/data
