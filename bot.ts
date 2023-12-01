@@ -96,13 +96,13 @@ client.addListener('message', async (from, to, message) => {
     // Check if the message is the opt-in command
     if (lowercaseMessage === '!ja') {
       optInUser(from, to);
-      client.notice(to, `${from} sagt zum moin ja.`);
+      client.notice(to, `${from} sagt ja zum moin.`);
     }
   
     // Check if the message is the opt-out command
     if (lowercaseMessage === '!nein') {
       optOutUser(from, to);
-      client.notice(to, `${from} sagt zum moin nein.`);
+      client.notice(to, `${from} sagt nein zum moin.`);
     }
 
     if (lowercaseMessage === '!moin') {
