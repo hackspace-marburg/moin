@@ -76,7 +76,7 @@ client.addListener('registered', () => {
 // Register event handlers
 client.addListener('message', async (from, to, message) => {
   // Convert the message to lowercase for case-insensitive matching
-  const lowercaseMessage = message.toLowerCase();
+  const lowercaseMessage = message.trim().toLowerCase();
 
 
   // Check if the message contains any of the catchphrases
