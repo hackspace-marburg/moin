@@ -24,4 +24,4 @@ irc:
   passphrase: 'forNickServ'
 
 api:
-  port: 3161
+  port: 8161
