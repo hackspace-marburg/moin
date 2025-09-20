@@ -7,4 +7,4 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - /var/lib/oi:/usr/src/app/data
+      - /var/lib/moin:/usr/src/app/data
