@@ -8,7 +8,12 @@ import * as sqlite3 from 'sqlite3';
 const fileContents = fs.readFileSync('./config.yml', 'utf8');
 
 // Parse YAML content into a plain JavaScript object
-const config = yaml.load(fileContents);
+interface Config {
+  irc: { channels: string[]; server: string; port: number; tls: boolean; username: string; passphrase: string };
+  moin: { variations: string[]; allowedUsers: string[] };
+  api: { port: number };
+}
+const config = yaml.load(fileContents) as Config;
 
 // Specify the path to the SQLite database file
 const dbFilePath = './data/database.db';
@@ -39,9 +44,8 @@ db.run(`
 `);
 
 // IRC bot configuration
-const ircConfig: irc.Config = {
+const ircConfig: irc.IClientOpts = {
   channels: config.irc.channels,
-  server: config.irc.server,
   port: config.irc.port,
   secure: config.irc.tls,
   userName: config.irc.username,
@@ -51,13 +55,10 @@ const ircConfig: irc.Config = {
 
 const catchphrases = config.moin.variations;
 
-const express = require('express');
 const apiApp = express();
 
-const irc = require('irc');
-
 // Create the IRC client
-const client = new irc.Client(ircConfig.server, ircConfig.userName, ircConfig);
+const client = new irc.Client(config.irc.server, config.irc.username, ircConfig);
 
 // Listen for the 'raw' event to log raw IRC messages
 // client.addListener('raw', (message) => {
@@ -74,13 +75,13 @@ client.addListener('registered', () => {
 });
 
 // Register event handlers
-client.addListener('message', async (from, to, message) => {
+client.addListener('message', async (from: string, to: string, message: string) => {
   // Convert the message to lowercase for case-insensitive matching
   const lowercaseMessage = message.trim().toLowerCase();
 
 
   // Check if the message contains any of the catchphrases
-  const catchphraseUsed = catchphrases.some((catchphrase) =>
+  const catchphraseUsed = catchphrases.some((catchphrase: string) =>
     lowercaseMessage.includes(catchphrase)
   );
 
@@ -217,7 +218,7 @@ async function getUserCatchphraseCount(channel: string, user?: string): Promise<
 }
 
 // Handle errors
-client.addListener('error', (message) => {
+client.addListener('error', (message: unknown) => {
   console.error('Error:', message);
 });
 
@@ -228,7 +229,7 @@ client.addListener('disconnect', () => {
 });
 
 // Endpoint to get catchphrase events
-apiApp.get('/api', (req, res) => {
+apiApp.get('/api', (req: express.Request, res: express.Response) => {
   const query = 'SELECT * FROM events';
 
   db.all(query, [], (err, rows) => {

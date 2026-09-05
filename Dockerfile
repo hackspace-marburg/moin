@@ -1,19 +1,6 @@
-# Use a lightweight Node.js image as base
-FROM node:24-alpine
-
-# Set the working directory in the container
+FROM node:26-alpine
 WORKDIR /usr/src/app
-
 RUN mkdir ./data
-
-COPY package*.json config.yml bot.ts ./
-
-# Install TypeScript and other dependencies
-RUN npm install -g typescript && npm install @types/node && npm install
-
-# Compile TypeScript to JavaScript
-RUN npm install irc express sqlite3 js-yaml
-RUN tsc bot.ts
-
-# Run the bot when the container starts
+COPY package*.json tsconfig.json config.yml bot.ts ./
+RUN npm install && npx tsc
 CMD ["node", "bot.js"]

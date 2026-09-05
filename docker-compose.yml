@@ -1,7 +1,6 @@
-version: '3'
 services:
   moin:
-    image: alpine
+    image: moin
     network_mode: host
     build:
       context: .
