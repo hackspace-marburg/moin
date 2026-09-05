@@ -6,7 +6,7 @@
   "scripts": { "build": "tsc" },
   "dependencies": {
     "express": "^4",
-    "irc": "^0.5",
+    "irc-upd": "^0.11",
     "js-yaml": "^4",
     "sqlite3": "^5"
   },

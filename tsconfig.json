@@ -6,5 +6,5 @@
     "esModuleInterop": true,
     "strict": true
   },
-  "files": ["bot.ts"]
+  "files": ["bot.ts", "irc-upd.d.ts"]
 }
