@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import express from 'express';
-import irc from 'irc';
+import irc from 'irc-upd';
 import * as sqlite3 from 'sqlite3';
 
 // Read YAML file
@@ -50,6 +50,8 @@ const ircConfig: irc.IClientOpts = {
   secure: config.irc.tls,
   userName: config.irc.username,
   realName: config.irc.username,
+  sasl: true,
+  password: config.irc.passphrase,
   autoConnect: true,
 };
 
@@ -67,12 +69,6 @@ const client = new irc.Client(config.irc.server, config.irc.username, ircConfig)
 
 // Dictionary to store users who opted-in
 const optedInUsers: Record<string, boolean> = {};
-
-// Register event handlers
-client.addListener('registered', () => {
-  // Identify with NickServ after the bot has registered on the server
-  client.say('NickServ', `IDENTIFY ${config.irc.username} ${config.irc.passphrase}`);
-});
 
 // Register event handlers
 client.addListener('message', async (from: string, to: string, message: string) => {
