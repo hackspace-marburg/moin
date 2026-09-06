@@ -7,3 +7,4 @@ services:
       dockerfile: Dockerfile
     volumes:
       - /var/lib/moin:/usr/src/app/data
+      - ./config.yml:/usr/src/app/config.yml:ro
